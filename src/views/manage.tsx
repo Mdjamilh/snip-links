@@ -19,6 +19,7 @@ export function DailyChart({ days }: { days: Stats["days"] }) {
           </rect>
         );
       })}
+      <line class="baseline" x1="0" y1={height + 0.5} x2={width} y2={height + 0.5} />
       <text x="0" y={height + 16}>
         {days[0]?.date}
       </text>
@@ -91,7 +92,7 @@ export function ManagePage({ stats, origin, token }: { stats: Stats; origin: str
       <section class="card breakdowns">
         <Breakdown title="Referrers" rows={stats.referrers} />
         <Breakdown title="Countries" rows={stats.countries} />
-        <Breakdown title="Devices" rows={stats.devices} />
+        <Breakdown title="Devices" rows={stats.devices.map((d) => ({ ...d, label: d.label[0]?.toUpperCase() + d.label.slice(1) }))} />
         <Breakdown title="Browsers" rows={stats.browsers} />
       </section>
 

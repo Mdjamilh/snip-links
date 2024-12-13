@@ -392,3 +392,7 @@ footer {
   margin: 0 0 6px;
   font-size: 15px;
 }
+
+.chart .baseline {
+  stroke: var(--border);
+}
