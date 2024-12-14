@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { createApp } from "../src/app.tsx";
-import { createDb } from "../src/db/index.ts";
-import { RateLimiter } from "../src/lib/rate-limit.ts";
-import type { Stats } from "../src/links.ts";
+import { createApp } from "../src/app.js";
+import { createDb } from "../src/db/index.js";
+import { RateLimiter } from "../src/lib/rate-limit.js";
+import type { Stats } from "../src/links.js";
 
 const ORIGIN = "https://snip.test";
 const CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36";

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { RateLimiter } from "../src/lib/rate-limit.ts";
-import { ALPHABET, checkCustomSlug, randomSlug } from "../src/lib/slug.ts";
-import { checkTargetUrl } from "../src/lib/target-url.ts";
-import { hashToken, newToken, tokenMatches } from "../src/lib/tokens.ts";
-import { classifyVisitor, referrerHost } from "../src/lib/visitor.ts";
+import { RateLimiter } from "../src/lib/rate-limit.js";
+import { ALPHABET, checkCustomSlug, randomSlug } from "../src/lib/slug.js";
+import { checkTargetUrl } from "../src/lib/target-url.js";
+import { hashToken, newToken, tokenMatches } from "../src/lib/tokens.js";
+import { classifyVisitor, referrerHost } from "../src/lib/visitor.js";
 
 describe("slugs", () => {
   it("are random, the right length and free of look-alike characters", () => {

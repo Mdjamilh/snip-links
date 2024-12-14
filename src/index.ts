@@ -1,7 +1,7 @@
 // Entry point for Vercel's Hono runtime: export the app as the default.
 // Static files in public/ are served by Vercel's CDN.
-import { createApp } from "./app.tsx";
-import { createDb } from "./db/index.ts";
+import { createApp } from "./app.js";
+import { createDb } from "./db/index.js";
 
 const { db, persistent } = await createDb();
 

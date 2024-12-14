@@ -1,7 +1,7 @@
 import { sql } from "kysely";
 import { describe, expect, it } from "vitest";
 
-import { createDb } from "../src/db/index.ts";
+import { createDb } from "../src/db/index.js";
 
 describe("database", () => {
   it("migrates an in-memory database and enforces the schema", async () => {

@@ -1,4 +1,4 @@
-import type { Link } from "../db/schema.ts";
+import type { Link } from "../db/schema.js";
 
 export type FormValues = { url?: string; slug?: string; expires?: string };
 export type FormErrors = Partial<Record<"url" | "slug" | "expiresAt" | "form", string>>;

@@ -1,4 +1,4 @@
-import type { Count, Stats } from "../links.ts";
+import type { Count, Stats } from "../links.js";
 
 /** Daily clicks as an SVG bar chart, drawn on the server: no chart library, works without JS. */
 export function DailyChart({ days }: { days: Stats["days"] }) {

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createDb, type Db } from "../src/db/index.ts";
-import * as slugs from "../src/lib/slug.ts";
-import { authorize, createLink, deleteLink, getStats, recordClick, resolveLink, setDisabled } from "../src/links.ts";
+import { createDb, type Db } from "../src/db/index.js";
+import * as slugs from "../src/lib/slug.js";
+import { authorize, createLink, deleteLink, getStats, recordClick, resolveLink, setDisabled } from "../src/links.js";
 
 let db: Db;
 beforeEach(async () => {

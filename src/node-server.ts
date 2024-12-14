@@ -2,8 +2,8 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 
-import { createApp } from "./app.tsx";
-import { createDb } from "./db/index.ts";
+import { createApp } from "./app.js";
+import { createDb } from "./db/index.js";
 
 const port = Number(process.env.PORT ?? 3000);
 const { db, persistent } = await createDb();

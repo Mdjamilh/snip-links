@@ -1,11 +1,11 @@
 import { sql, type RawBuilder } from "kysely";
 
-import type { Db } from "./db/index.ts";
-import type { Link } from "./db/schema.ts";
-import { checkCustomSlug, randomSlug } from "./lib/slug.ts";
-import { checkTargetUrl } from "./lib/target-url.ts";
-import { hashToken, newToken, tokenMatches } from "./lib/tokens.ts";
-import type { Device } from "./lib/visitor.ts";
+import type { Db } from "./db/index.js";
+import type { Link } from "./db/schema.js";
+import { checkCustomSlug, randomSlug } from "./lib/slug.js";
+import { checkTargetUrl } from "./lib/target-url.js";
+import { hashToken, newToken, tokenMatches } from "./lib/tokens.js";
+import type { Device } from "./lib/visitor.js";
 
 export type CreateInput = { url: string; slug?: string; expiresAt?: Date };
 export type CreateResult = { ok: true; link: Link; token: string } | { ok: false; error: string; field: "url" | "slug" | "expiresAt" };

@@ -3,13 +3,13 @@ import { secureHeaders } from "hono/secure-headers";
 import QRCode from "qrcode";
 import { z } from "zod";
 
-import type { Db } from "./db/index.ts";
-import { RateLimiter } from "./lib/rate-limit.ts";
-import { classifyVisitor, referrerHost } from "./lib/visitor.ts";
-import { authorize, createLink, deleteLink, getStats, recordClick, resolveLink, setDisabled } from "./links.ts";
-import { CreateForm, HomePage, Result, type FormErrors } from "./views/home.tsx";
-import { Layout } from "./views/layout.tsx";
-import { ManagePage, MessagePage } from "./views/manage.tsx";
+import type { Db } from "./db/index.js";
+import { RateLimiter } from "./lib/rate-limit.js";
+import { classifyVisitor, referrerHost } from "./lib/visitor.js";
+import { authorize, createLink, deleteLink, getStats, recordClick, resolveLink, setDisabled } from "./links.js";
+import { CreateForm, HomePage, Result, type FormErrors } from "./views/home.js";
+import { Layout } from "./views/layout.js";
+import { ManagePage, MessagePage } from "./views/manage.js";
 
 export type AppOptions = {
   db: Db;

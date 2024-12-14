@@ -3,8 +3,8 @@ import { Kysely, PostgresDialect, sql } from "kysely";
 import { Migrator, type Migration, type MigrationProvider } from "kysely/migration";
 import pg from "pg";
 
-import { PGliteDialect } from "./pglite-dialect.ts";
-import type { Database } from "./schema.ts";
+import { PGliteDialect } from "./pglite-dialect.js";
+import type { Database } from "./schema.js";
 
 /** Migrations live in code, so the app can migrate itself on start. */
 const migrations: Record<string, Migration> = {
