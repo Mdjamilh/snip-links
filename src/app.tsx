@@ -52,7 +52,15 @@ export function createApp({ db, persistent, publicUrl, createLimit, now = () => 
     }),
   );
 
-  const origin = (c: Context) => (publicUrl ?? new URL(c.req.url).origin).replace(/\/$/, "");
+  // Behind a proxy (Vercel, a load balancer) the request URL can be plain http
+  // on an internal host; the forwarded headers carry what the visitor used.
+  const origin = (c: Context) => {
+    if (publicUrl) return publicUrl.replace(/\/$/, "");
+    const url = new URL(c.req.url);
+    const proto = c.req.header("x-forwarded-proto")?.split(",")[0]?.trim() || url.protocol.replace(":", "");
+    const forwardedHost = c.req.header("x-forwarded-host")?.split(",")[0]?.trim() || url.host;
+    return `${proto}://${forwardedHost}`;
+  };
   const host = (c: Context) => new URL(origin(c)).host;
 
   // Behind Vercel or another proxy, the client is the first X-Forwarded-For entry.

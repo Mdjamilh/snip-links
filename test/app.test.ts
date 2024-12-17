@@ -66,6 +66,13 @@ describe("API", () => {
     expect((await app.request("/mine")).status).toBe(404);
   });
 
+  it("builds short links from forwarded headers when no public URL is configured", async () => {
+    const { db } = await createDb(undefined);
+    const proxied = createApp({ db, persistent: false });
+    const res = await proxied.request("http://internal:3000/api/links", json({ url: "https://a.com", slug: "via-proxy" }, { "x-forwarded-proto": "https", "x-forwarded-host": "snip.example.org" }));
+    expect(((await res.json()) as Record<string, string>).shortUrl).toBe("https://snip.example.org/via-proxy");
+  });
+
   it("rate limits link creation per client", async () => {
     const { db } = await createDb(undefined);
     const limited = createApp({ db, persistent: false, publicUrl: ORIGIN, createLimit: new RateLimiter({ capacity: 2, perMinute: 1 }) });
