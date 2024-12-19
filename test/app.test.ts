@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { createApp } from "../src/app.js";
-import { createDb } from "../src/db/index.js";
+import { freshDb } from "./fresh-db.js";
 import { RateLimiter } from "../src/lib/rate-limit.js";
 import type { Stats } from "../src/links.js";
 
@@ -12,7 +12,7 @@ let app: ReturnType<typeof createApp>;
 let now: Date;
 
 beforeEach(async () => {
-  const { db } = await createDb(undefined);
+  const db = await freshDb();
   now = new Date("2026-05-10T12:00:00Z");
   app = createApp({ db, persistent: false, publicUrl: ORIGIN, now: () => now, createLimit: new RateLimiter({ capacity: 100, perMinute: 100 }) });
 });
@@ -67,14 +67,14 @@ describe("API", () => {
   });
 
   it("builds short links from forwarded headers when no public URL is configured", async () => {
-    const { db } = await createDb(undefined);
+    const db = await freshDb();
     const proxied = createApp({ db, persistent: false });
     const res = await proxied.request("http://internal:3000/api/links", json({ url: "https://a.com", slug: "via-proxy" }, { "x-forwarded-proto": "https", "x-forwarded-host": "snip.example.org" }));
     expect(((await res.json()) as Record<string, string>).shortUrl).toBe("https://snip.example.org/via-proxy");
   });
 
   it("rate limits link creation per client", async () => {
-    const { db } = await createDb(undefined);
+    const db = await freshDb();
     const limited = createApp({ db, persistent: false, publicUrl: ORIGIN, createLimit: new RateLimiter({ capacity: 2, perMinute: 1 }) });
     const post = (ip: string) => limited.request("/api/links", json({ url: "https://a.com" }, { "x-forwarded-for": `${ip}, 10.0.0.1` }));
     expect((await post("1.1.1.1")).status).toBe(201);

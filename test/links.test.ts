@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createDb, type Db } from "../src/db/index.js";
+import type { Db } from "../src/db/index.js";
+import { freshDb } from "./fresh-db.js";
 import * as slugs from "../src/lib/slug.js";
 import { authorize, createLink, deleteLink, getStats, recordClick, resolveLink, setDisabled } from "../src/links.js";
 
 let db: Db;
 beforeEach(async () => {
-  ({ db } = await createDb(undefined));
+  db = await freshDb();
 });
 
 const click = (over: Partial<Parameters<typeof recordClick>[2]> = {}) => ({ referrerHost: null, country: null, device: "desktop" as const, browser: "Chrome", ...over });

@@ -1,12 +1,11 @@
 import { sql } from "kysely";
 import { describe, expect, it } from "vitest";
 
-import { createDb } from "../src/db/index.js";
+import { freshDb } from "./fresh-db.js";
 
 describe("database", () => {
   it("migrates an in-memory database and enforces the schema", async () => {
-    const { db, persistent } = await createDb(undefined);
-    expect(persistent).toBe(false);
+    const db = await freshDb();
 
     await db.insertInto("links").values({ slug: "abc", target_url: "https://example.com", token_hash: "h", expires_at: null }).execute();
     const link = await db.selectFrom("links").selectAll().where("slug", "=", "abc").executeTakeFirstOrThrow();
@@ -22,7 +21,7 @@ describe("database", () => {
   });
 
   it("keeps transactions isolated and rolls back on error", async () => {
-    const { db } = await createDb(undefined);
+    const db = await freshDb();
     await expect(
       db.transaction().execute(async (trx) => {
         await trx.insertInto("links").values({ slug: "tx", target_url: "https://a.com", token_hash: "h", expires_at: null }).execute();
