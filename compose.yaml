@@ -1,0 +1,30 @@
+# Self-host snip with Postgres: docker compose up -d
+services:
+  app:
+    build: .
+    ports: ["3000:3000"]
+    environment:
+      DATABASE_URL: postgres://snip:snip@db:5432/snip
+      # PUBLIC_URL: https://snip.example.com
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
+      interval: 5s
+      retries: 10
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: snip
+      POSTGRES_PASSWORD: snip
+      POSTGRES_DB: snip
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U snip"]
+      interval: 3s
+      retries: 10
+
+volumes:
+  pgdata:
