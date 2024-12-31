@@ -119,6 +119,27 @@ export function ManagePage({ stats, origin, token }: { stats: Stats; origin: str
   );
 }
 
+/** "Where does this go?" Shown for /slug+ so people can check a link before visiting. */
+export function PreviewPage({ short, target, createdAt }: { short: string; target: string; createdAt: Date }) {
+  const host = new URL(target).hostname;
+  return (
+    <section class="card">
+      <p class="muted first">{short.replace(/^https?:\/\//, "")} goes to</p>
+      <h1 class="page-title preview-host">{host}</h1>
+      <p class="mono target">{target}</p>
+      <p class="muted">Created {createdAt.toISOString().slice(0, 10)}. Viewing this page doesn't count as a click.</p>
+      <div class="actions">
+        <a class="button" href={target} rel="noopener noreferrer">
+          Continue to {host}
+        </a>
+        <a class="button secondary" href="/">
+          Make your own short link
+        </a>
+      </div>
+    </section>
+  );
+}
+
 export function MessagePage({ title, message }: { title: string; message: string }) {
   return (
     <section class="card">

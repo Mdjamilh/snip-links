@@ -9,7 +9,7 @@ import { classifyVisitor, referrerHost } from "./lib/visitor.js";
 import { authorize, createLink, deleteLink, getStats, recordClick, resolveLink, setDisabled } from "./links.js";
 import { CreateForm, HomePage, Result, type FormErrors } from "./views/home.js";
 import { Layout } from "./views/layout.js";
-import { ManagePage, MessagePage } from "./views/manage.js";
+import { ManagePage, MessagePage, PreviewPage } from "./views/manage.js";
 
 export type AppOptions = {
   db: Db;
@@ -195,6 +195,14 @@ export function createApp({ db, persistent, publicUrl, createLimit, now = () => 
   });
 
   // The redirect itself. Must stay last: it matches any single path segment.
+  // Adding "+" to a short link shows where it goes instead of going there.
+  app.get("/:slug{[A-Za-z0-9_-]+\\+}", async (c) => {
+    const slug = c.req.param("slug").slice(0, -1);
+    const link = await db.selectFrom("links").select(["target_url", "created_at"]).where("slug", "=", slug).executeTakeFirst();
+    if (!link) return page(c, "Not found", <MessagePage title="This link doesn't exist" message="It may have been mistyped or deleted." />, 404);
+    return page(c, `Where /${slug} goes`, <PreviewPage short={`${origin(c)}/${slug}`} target={link.target_url} createdAt={link.created_at} />);
+  });
+
   app.get("/:slug{[A-Za-z0-9_-]+}", async (c) => {
     const slug = c.req.param("slug");
     const resolved = await resolveLink(db, slug, now());

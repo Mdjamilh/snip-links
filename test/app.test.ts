@@ -196,3 +196,19 @@ describe("web pages", () => {
     expect(await res.text()).toContain("Demo instance");
   });
 });
+
+describe("link preview", () => {
+  it("shows where a link goes without counting a click", async () => {
+    const { data } = await create({ url: "https://example.com/terms", slug: "check-me" });
+    const res = await app.request("/check-me+", { headers: { "user-agent": CHROME } });
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("example.com");
+    expect(html).toContain('href="https://example.com/terms"');
+    expect(html).toContain("doesn&#39;t count as a click");
+
+    const stats = (await (await app.request("/api/links/check-me", { headers: { authorization: `Bearer ${data.manageToken}` } })).json()) as Stats;
+    expect(stats.totalClicks).toBe(0);
+    expect((await app.request("/missing+")).status).toBe(404);
+  });
+});

@@ -396,3 +396,8 @@ footer {
 .chart .baseline {
   stroke: var(--border);
 }
+
+.preview-host {
+  margin: 4px 0;
+  word-break: break-all;
+}
