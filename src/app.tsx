@@ -6,7 +6,7 @@ import { z } from "zod";
 import type { Db } from "./db/index.js";
 import { RateLimiter } from "./lib/rate-limit.js";
 import { classifyVisitor, referrerHost } from "./lib/visitor.js";
-import { authorize, createLink, deleteLink, getStats, recordClick, resolveLink, setDisabled } from "./links.js";
+import { authorize, createLink, deleteLink, getStats, listClicks, recordClick, resolveLink, setDisabled, toCsv } from "./links.js";
 import { CreateForm, HomePage, Result, type FormErrors } from "./views/home.js";
 import { Layout } from "./views/layout.js";
 import { ManagePage, MessagePage, PreviewPage } from "./views/manage.js";
@@ -122,6 +122,22 @@ export function createApp({ db, persistent, publicUrl, createLimit, now = () => 
     return page(c, `Stats for /${slug}`, <ManagePage stats={stats} origin={origin(c)} token={token} />);
   });
 
+  app.get("/manage/:slug/clicks.csv", async (c) => {
+    const slug = c.req.param("slug");
+    const link = await authorize(db, slug, c.req.query("token"));
+    if (!link) return c.text("Not found", 404);
+    const rows = await listClicks(db, slug);
+    const csv = toCsv([
+      ["time_utc", "referrer", "country", "device", "browser"],
+      ...rows.map((r) => [new Date(r.at).toISOString(), r.referrer_host ?? "", r.country ?? "", r.device, r.browser]),
+    ]);
+    return c.body(csv, 200, {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${slug}-clicks.csv"`,
+      "Cache-Control": "no-store",
+    });
+  });
+
   app.post("/manage/:slug/:action{toggle|delete}", async (c) => {
     const slug = c.req.param("slug");
     const token = String((await c.req.parseBody()).token ?? "");
@@ -221,6 +237,8 @@ export function createApp({ db, persistent, publicUrl, createLimit, now = () => 
           country: c.req.header("x-vercel-ip-country") ?? c.req.header("cf-ipcountry") ?? null,
           device: visitor.device,
           browser: visitor.browser,
+          // The same clock as expiry checks and stats windows, not the database's.
+          at: now(),
         });
       } catch (error) {
         // Analytics must never break the redirect.
