@@ -401,3 +401,8 @@ footer {
   margin: 4px 0;
   word-break: break-all;
 }
+
+.export {
+  margin: 12px 4px;
+  font-size: 14px;
+}

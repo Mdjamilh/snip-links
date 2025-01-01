@@ -87,6 +87,20 @@ export async function deleteLink(db: Db, slug: string): Promise<void> {
   await db.deleteFrom("links").where("slug", "=", slug).execute();
 }
 
+/** Every recorded click for a link, oldest first, for export. */
+export function listClicks(db: Db, slug: string) {
+  return db.selectFrom("clicks").select(["at", "referrer_host", "country", "device", "browser"]).where("slug", "=", slug).orderBy("at").orderBy("id").execute();
+}
+
+/** RFC 4180 CSV. Values that spreadsheets would run as formulas get a leading apostrophe. */
+export function toCsv(rows: string[][]): string {
+  const cell = (v: string) => {
+    const safe = /^[=+\-@\t\r]/.test(v) ? `'${v}` : v;
+    return /[",\r\n]/.test(safe) ? `"${safe.replaceAll('"', '""')}"` : safe;
+  };
+  return rows.map((r) => r.map(cell).join(",")).join("\r\n") + "\r\n";
+}
+
 export type Count = { label: string; clicks: number };
 export type Stats = {
   slug: string;

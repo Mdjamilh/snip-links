@@ -212,3 +212,25 @@ describe("link preview", () => {
     expect((await app.request("/missing+")).status).toBe(404);
   });
 });
+
+describe("CSV export", () => {
+  it("lets the owner download every click, safely escaped", async () => {
+    const { data } = await create({ url: "https://a.com", slug: "export-me" });
+    await app.request("/export-me", { headers: { "user-agent": CHROME, referer: "https://news.example/a", "x-vercel-ip-country": "DE" } });
+    await app.request("/export-me", { headers: { "user-agent": CHROME } });
+
+    expect((await app.request("/manage/export-me/clicks.csv?token=wrong")).status).toBe(404);
+    const res = await app.request(`/manage/export-me/clicks.csv?token=${encodeURIComponent(data.manageToken ?? "")}`);
+    expect(res.headers.get("content-type")).toBe("text/csv; charset=utf-8");
+    expect(res.headers.get("content-disposition")).toBe('attachment; filename="export-me-clicks.csv"');
+    const lines = (await res.text()).trim().split("\r\n");
+    expect(lines[0]).toBe("time_utc,referrer,country,device,browser");
+    expect(lines[1]).toBe("2026-05-10T12:00:00.000Z,news.example,DE,desktop,Chrome");
+    expect(lines).toHaveLength(3);
+  });
+
+  it("quotes commas and defuses spreadsheet formulas", async () => {
+    const { toCsv } = await import("../src/links.js");
+    expect(toCsv([["a,b", 'say "hi"', "=SUM(A1)", "plain"]])).toBe('"a,b","say ""hi""",\'=SUM(A1),plain\r\n');
+  });
+});

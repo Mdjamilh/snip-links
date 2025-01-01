@@ -89,6 +89,12 @@ export function ManagePage({ stats, origin, token }: { stats: Stats; origin: str
         <DailyChart days={stats.days} />
       </section>
 
+      <p class="export">
+        <a href={`/manage/${stats.slug}/clicks.csv?token=${encodeURIComponent(token)}`} download>
+          Download every click as CSV
+        </a>
+      </p>
+
       <section class="card breakdowns">
         <Breakdown title="Referrers" rows={stats.referrers} />
         <Breakdown title="Countries" rows={stats.countries} />
