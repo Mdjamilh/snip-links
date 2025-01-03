@@ -7,6 +7,7 @@ import type { Db } from "./db/index.js";
 import { RateLimiter } from "./lib/rate-limit.js";
 import { classifyVisitor, referrerHost } from "./lib/visitor.js";
 import { authorize, createLink, deleteLink, getStats, listClicks, recordClick, resolveLink, setDisabled, toCsv } from "./links.js";
+import { openApiSpec } from "./openapi.js";
 import { CreateForm, HomePage, Result, type FormErrors } from "./views/home.js";
 import { Layout } from "./views/layout.js";
 import { ManagePage, MessagePage, PreviewPage } from "./views/manage.js";
@@ -82,6 +83,11 @@ export function createApp({ db, persistent, publicUrl, createLimit, now = () => 
   };
 
   app.get("/healthz", (c) => c.json({ ok: true, persistent }));
+
+  app.get("/api/openapi.json", (c) => c.json(openApiSpec(origin(c))));
+
+  // Short links are fine to crawl (they redirect); private stats and the API are not.
+  app.get("/robots.txt", (c) => c.text("User-agent: *\nDisallow: /manage/\nDisallow: /api/\n"));
 
   app.get("/", (c) => page(c, "snip: short links with private stats", <HomePage host={host(c)} />));
 

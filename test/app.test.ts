@@ -234,3 +234,15 @@ describe("CSV export", () => {
     expect(toCsv([["a,b", 'say "hi"', "=SUM(A1)", "plain"]])).toBe('"a,b","say ""hi""",\'=SUM(A1),plain\r\n');
   });
 });
+
+describe("discovery", () => {
+  it("describes the API with OpenAPI and keeps crawlers off private pages", async () => {
+    const spec = (await (await app.request("/api/openapi.json")).json()) as { openapi: string; servers: { url: string }[]; paths: Record<string, unknown> };
+    expect(spec.openapi).toBe("3.1.0");
+    expect(spec.servers[0]?.url).toBe(ORIGIN);
+    expect(Object.keys(spec.paths)).toEqual(["/api/links", "/api/links/{slug}"]);
+
+    const robots = await (await app.request("/robots.txt")).text();
+    expect(robots).toContain("Disallow: /manage/");
+  });
+});
