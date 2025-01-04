@@ -5,7 +5,7 @@
   --text: #1c1917;
   --muted: #78716c;
   --border: #e7e5e4;
-  --accent: #ea580c;
+  --accent: #c2410c; /* orange-700: 4.5:1 or better as text and behind white text */
   --accent-text: #ffffff;
   --accent-soft: #fff1e8;
   --danger: #dc2626;
