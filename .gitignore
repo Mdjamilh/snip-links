@@ -3,3 +3,5 @@ node_modules
 .env.local
 coverage
 .vercel
+test-results
+playwright-report
