@@ -13,7 +13,9 @@ A link shortener that doesn't need an account and doesn't track people. Shorten 
 - Random short names like `snip.example/7hKq2pX`, or a custom name such as `/spring-sale`
 - Links that expire after an hour, a day, a week or a month
 - A QR code for every link
+- Add `+` to any short link (`/my-page+`) to see where it goes before visiting
 - Click stats: daily chart, referrers, countries, devices and browsers. Link previews (Slack, iMessage, social networks) and bots are not counted.
+- Download every click as CSV (cells starting with `=`, `+`, `-` or `@` are defused so spreadsheets don't run them as formulas)
 - No accounts: each link has a private management token instead
 - Works without JavaScript; htmx makes it faster when JavaScript is available
 - A JSON API for everything the web page does
@@ -41,7 +43,7 @@ curl -X POST https://snip-links.vercel.app/api/links \
 }
 ```
 
-The management token is returned once. Send it as a bearer token to manage the link:
+The full API is described in [OpenAPI 3.1](https://snip-links.vercel.app/api/openapi.json), which validates cleanly with Redocly. The management token is returned once. Send it as a bearer token to manage the link:
 
 | Request | Does |
 |---|---|
@@ -83,8 +85,9 @@ Vercel's Hono preset doesn't compile `.tsx` files, so `scripts/build-vercel.mjs`
 
 ```bash
 npm install
-npm test                                              # 46 tests on in-memory PGlite
+npm test                                              # 50 tests on in-memory PGlite
 TEST_DATABASE_URL=postgres://… npm test               # the same tests on real Postgres
+npm run test:e2e                                      # browser tests, with and without JavaScript
 ```
 
 The tests cover:
@@ -93,7 +96,9 @@ The tests cover:
 - **Concurrency:** concurrent clicks and transactions on PGlite's single connection.
 - **Every HTTP flow:** the API, redirects, expiry, the form with and without htmx, owner actions, rate limits, and the security headers.
 
-CI runs the suite twice, on PGlite and on Postgres 17. It also builds the Vercel bundle, runs `npm audit`, and starts the Docker Compose stack to check a real redirect against Postgres.
+The browser tests run every flow twice: with JavaScript (htmx) and with JavaScript turned off, which proves the plain HTML forms work on their own. They also run an axe accessibility scan, which caught light-theme orange that was too faint for WCAG AA contrast.
+
+CI runs the unit suite twice, on PGlite and on Postgres 17, plus the browser tests. It also builds the Vercel bundle, runs `npm audit`, and starts the Docker Compose stack to check a real redirect against Postgres.
 
 ## Self-hosting
 
